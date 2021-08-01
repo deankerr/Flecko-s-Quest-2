@@ -6,7 +6,7 @@ import BgmScene from './bgm'
 const config = {
     type: Phaser.AUTO,
     parent: 'game',
-    width: 360,
+    width: 720,
     height: 640,
     scene: [TitleScene, GameScene, BgmScene],
     physics: {

@@ -21,18 +21,31 @@ class GameScene extends Phaser.Scene
         this.walk = this.sound.add('walk')
 
         // Background
-        this.bg1 = this.physics.add.sprite(0, 0, 'background')
-        this.bg1.setRotation(3 * Math.PI / 2)
-        this.bg1.setOrigin(1, 0)
-        this.bg1.setImmovable(true)
+        let bg1 = this.physics.add.sprite(0, 0, 'background')
+        bg1.setOrigin(0, 0)
+        bg1.setScale(1.5)
+        // bg1.setTint(0xFF0000)
 
-        this.bg2 = this.physics.add.sprite(0, 0 - 639, 'background')
-        this.bg2.setRotation(3 * Math.PI / 2)
-        this.bg2.setOrigin(1, 0)
-        this.bg2.setFlipY(true)
-        this.bg2.setImmovable(true)
+        let bg2 = this.physics.add.sprite(0, 0, 'background')
+        bg2.setOrigin(0, 0)
+        bg2.setScale(1.5)
+        bg2.setFlipX(true)
+        // bg2.setTint(0x00FF00)
 
-        this.setBgSpeed(50)
+        let bg3 = this.physics.add.sprite(0, 0, 'background')
+        bg3.setOrigin(0, 0)
+        bg3.setScale(1.5)
+
+        bg1.prev = bg3
+        bg2.prev = bg1
+        bg3.prev = bg2
+
+        bg1.y = this.gameH - bg1.displayHeight
+        bg2.y = bg1.y - bg2.displayHeight
+        bg3.y = bg2.y - bg3.displayHeight
+
+        this.bg = [bg1, bg2, bg3]
+        this.setBgSpeed(500)
         
         // Player
         this.player = this.physics.add.sprite(this.gameW / 2, this.gameH - 100, 'player')
@@ -58,9 +71,11 @@ class GameScene extends Phaser.Scene
         this.physics.add.overlap(this.playerBullets, this.enemies, this.enemyHit, null, this)
         this.physics.add.overlap(this.enemies, this.player, this.playerHit, null, this)
 
+        // this.debugtext = this.add.text(10, 10, 'Bg')
     }
 
     update() {
+        // this.debugtext.text = `bg1 y: ${Math.round(this.bg1.y)} bg2 y: ${Math.round(this.bg2.y)}`
         this.updateBackground()
         this.updatePlayer()
         this.removeOffScreenBullets()
@@ -83,11 +98,16 @@ class GameScene extends Phaser.Scene
 
     enemyHit(bullet, enemy) {
         console.log('Enemy hit')
-        this.playerBullets.killAndHide(bullet)
-        bullet.disableBody()
+        this.disableSprite(bullet, this.playerBullets)
+        this.disableSprite(enemy, this.enemies)
+    }
 
-        this.enemies.killAndHide(enemy)
-        enemy.disableBody()
+    disableSprite(sprite, group = null) {
+        console.log(sprite)
+        sprite.body.x = -sprite.displayWidth
+        sprite.body.y = -sprite.displayHeight
+        group.killAndHide(sprite)
+        sprite.disableBody()   
     }
 
     updatePlayer() {
@@ -141,6 +161,8 @@ class GameScene extends Phaser.Scene
         Math.random() > .5 ? bullet.setFlipY(true) : bullet.setFlipY(false)
         bullet.setActive(true).setVisible(true)
         bullet.enableBody()
+        bullet.body.x = bullet.x
+        bullet.body.y = bullet.y
         bullet.setVelocityY(-400)
 
         this.playerbulletTimeout = this.playerShootDelay
@@ -182,13 +204,20 @@ class GameScene extends Phaser.Scene
     }
 
     updateBackground() {
-        if (this.bg1.y >= this.bg1.width) this.bg1.y = -this.bg1.width + 1
-        if (this.bg2.y >= this.bg2.width) this.bg2.y = -this.bg2.width + 1
+        this.bg.forEach((bg) => {
+            if (bg.y >= this.gameH) {
+            // console.log('returning')
+            bg.y = bg.prev.y - bg.displayHeight
+            bg.x = this.randBtn(this.gameW - bg.displayWidth, 0)
+            }
+        })
     }
 
     setBgSpeed(speed) {
-       this.bg1.setVelocityY(speed)
-       this.bg2.setVelocityY(speed)
+       this.bg.forEach((bg) => {
+           bg.setVelocityY(speed)
+           console.log(bg.get)
+       })
     }
 
     randBtn(min, max) {
