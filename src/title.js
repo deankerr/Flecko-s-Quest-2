@@ -5,6 +5,8 @@ import dragonImg from './assets/dragon.png'
 import playerImg from './assets/player.png'
 import treasureImg from './assets/treasure.png'
 
+import fireballImg from './assets/fireball.png'
+
 // import mindmazeAudio from './assets/mindmaze.mp3'
 // import funkyAudio from './assets/funky.mp3'
 
@@ -34,6 +36,11 @@ class TitleScene extends Phaser.Scene {
     this.load.image('dragon', dragonImg)
     this.load.image('player', playerImg)
     this.load.image('treasure', treasureImg)
+
+    this.load.spritesheet('fireball', fireballImg, {
+      frameWidth: 8,
+      frameHeight: 8,
+    })
 
     // this.load.audio('mindmaze', mindmazeAudio)
     // this.load.audio('funky', funkyAudio)
