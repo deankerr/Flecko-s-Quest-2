@@ -7,19 +7,24 @@ class BgmScene extends Phaser.Scene {
 
   init() {
     this.gameScene = this.scene.get('gameScene')
+    this.pauseMan = this.scene.get('pauseMan')
   }
 
   create() {
-    this.bgm = this.sound.add('mindmaze')
-    // this.bgm.play({loop: true})
+    this.bgm = this.sound.add('road')
+    this.bgm.play({loop: true})
     
     this.gameScene.events.on('stopBgm', () => {
       this.bgm.stop()
     })
 
     this.gameScene.events.on('playBgm', () => {
-      // if (!this.bgm.isPlaying) this.bgm.play({loop: true})
+      if (!this.bgm.isPlaying) this.bgm.play({loop: false})
     })
+
+    this.pauseMan.events.on('pauseBgm', () => this.bgm.pause())
+
+    this.pauseMan.events.on('resumeBgm', () => this.bgm.resume())
   }
 }
 
